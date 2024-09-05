@@ -16,5 +16,9 @@ namespace Book_Store.Controllers
             List<Category> CategoryList = _context.Categories.ToList();
             return View(CategoryList);
         }
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }
