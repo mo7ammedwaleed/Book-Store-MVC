@@ -59,5 +59,30 @@ namespace Book_Store.Controllers
             }
             return View();
         }
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            Category? categoryFromDb = _context.Categories.Find(id);
+            if (categoryFromDb == null)
+            {
+                return NotFound();
+            }
+            return View(categoryFromDb);
+        }
+        [HttpPost,ActionName("Delete")]
+        public IActionResult DeletePOST(int? id)
+        {
+            Category? obj = _context.Categories.Find(id);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            _context.Categories.Remove(obj);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }
