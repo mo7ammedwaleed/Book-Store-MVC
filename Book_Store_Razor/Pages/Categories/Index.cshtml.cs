@@ -8,7 +8,6 @@ namespace Book_Store_Razor.Pages.Categories
     public class IndexModel : PageModel
     {
         private readonly ApplicationDbContext _db;
-
         public List<Category> CategoryList { get; set; }
         public IndexModel(ApplicationDbContext db)
         {
