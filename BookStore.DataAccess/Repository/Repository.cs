@@ -1,8 +1,9 @@
 ﻿using System.Linq.Expressions;
 using BookStore.DataAccess.Data;
+using BookStore.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookStore.DataAccess.Repository.IRepository
+namespace BookStore.DataAccess.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
@@ -11,7 +12,7 @@ namespace BookStore.DataAccess.Repository.IRepository
         public Repository(ApplicationDbContext db)
         {
             _db = db;
-            this.dbSet = _db.Set<T>();
+            dbSet = _db.Set<T>();
         }
 
         public void Add(T entity)
