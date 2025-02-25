@@ -3,7 +3,7 @@ using BookStore.DataAccess.Repository.IRepository;
 
 namespace BookStore.DataAccess.Repository
 {
-    class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
         public ICategoryRepository Category { get; private set; }
