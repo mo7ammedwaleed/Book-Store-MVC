@@ -16,9 +16,5 @@ namespace BookStore.DataAccess.Repository
         {
             _db.Update(obj);
         }
-        public void Save()
-        {
-            _db.SaveChanges();
-        }
     }
 }
