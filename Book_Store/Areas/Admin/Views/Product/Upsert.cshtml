@@ -7,12 +7,13 @@
     <div class="card-header bg-secondary bg-gradient m-lg-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Create Product</h2>
+                <h2 class="text-white py-2">@(Model.Product.Id != 0 ? "Update":"Create") Product</h2>
             </div>
         </div>
     </div>
     <div class="card-body p-4">
-        <form method="post" class="row">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="Product.Id" hidden/>
             <div class="border p-3">
                 @* <div asp-validation-summary="All"></div> *@
                 <div class="form-floating py-2 col-12">
@@ -20,11 +21,12 @@
                     <label asp-for="Product.Title" class="ms-2"></label>
                     <span asp-validation-for="Product.Title" class="text-danger"></span>
                 </div>
-                <div class="form-floating py-2 col-12">
-                    <input asp-for="Product.Description" class="form-control border-0 shadow" />
-                    <label asp-for="Product.Description" class="ms-2"></label>
+                <div class="py-2 col-12">
+                    <label asp-for="Product.Description" class="ms-2 text-muted"></label>
+					<textarea asp-for="Product.Description" class="form-control border-0 shadow"></textarea>
                     <span asp-validation-for="Product.Description" class="text-danger"></span>
                 </div>
+                
                 <div class="form-floating py-2 col-12">
                     <input asp-for="Product.Author" class="form-control border-0 shadow" />
                     <label asp-for="Product.Author" class="ms-2"></label>
@@ -63,13 +65,13 @@
                     <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
                 </div>
                 <div class="form-floating py-2 col-12">
-                    <input asp-for="Product.ImageURL" class="form-control border-0 shadow" />
+                    <input type="file" class="form-control border-0 shadow" />
                     <label asp-for="Product.ImageURL" class="ms-2"></label>
                 </div>
 
                 <div class="row pt-2">
                     <div class="col-6 col-md-3">
-                        <button type="submit" class="btn btn-primary form-control">Create</button>
+                        <button type="submit" class="btn btn-primary form-control">@(Model.Product.Id != 0 ? "Update" : "Create")</button>
                     </div>
                     <div class="col-6 col-md-3">
                         <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary border form-control text-black">
@@ -84,6 +86,26 @@
 </div>
 
 @section Scripts {
+    <script>
+        tinymce.init({
+          selector: 'textarea',
+          plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'lists','searchreplace', 'table', 'visualblocks', 'wordcount',
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Mar 14, 2025:
+            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+          ],
+          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap',
+          tinycomments_mode: 'embedded',
+          tinycomments_author: 'Author name',
+          mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+          ],
+          ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        });
+    </script>
     @{
         <partial name="_ValidationScriptsPartial" />
     }
