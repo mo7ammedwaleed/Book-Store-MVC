@@ -1,7 +1,8 @@
-﻿using BookStore.DataAccess.Repository;
-using BookStore.DataAccess.Repository.IRepository;
+﻿using BookStore.DataAccess.Repository.IRepository;
 using BookStore.Models;
+using BookStore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookStore.Areas.Admin.Controllers
 {
@@ -20,20 +21,36 @@ namespace BookStore.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            ProductVM productVM = new()
+            {
+                CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                }),
+                Product = new Product()
+            };
+            return View(productVM);
         }
         [HttpPost]
-        public IActionResult Create(Product obj)
+        public IActionResult Create(ProductVM productVM)
         {
-
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(obj);
+                _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Save();
                 TempData["success"] = "Product Created Successfuly";
                 return RedirectToAction("Index");
             }
-            return View();
+            else
+            {
+                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
+                return View(productVM);
+            }
         }
         public IActionResult Edit(int? id)
         {
@@ -51,6 +68,7 @@ namespace BookStore.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(Product obj)
         {
+            
             if (ModelState.IsValid)
             {
                 _unitOfWork.Product.Update(obj);
