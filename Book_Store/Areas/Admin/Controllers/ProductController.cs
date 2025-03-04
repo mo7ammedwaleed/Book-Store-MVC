@@ -1,4 +1,5 @@
-﻿using BookStore.DataAccess.Repository.IRepository;
+﻿using System.ComponentModel.DataAnnotations;
+using BookStore.DataAccess.Repository.IRepository;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace BookStore.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> ProductList = _unitOfWork.Product.GetAll().ToList();
+            List<Product> ProductList = _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
             return View(ProductList);
         }
         public IActionResult Upsert(int? id)
@@ -122,5 +123,17 @@ namespace BookStore.Areas.Admin.Controllers
             TempData["success"] = "Product Deleted Successfuly";
             return RedirectToAction("Index");
         }
+
+        #region Api Calls
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var allObj = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            return Json(new { data = allObj });
+        }
+
+        #endregion
+
     }
 }
