@@ -160,6 +160,7 @@ namespace BookStore.Areas.Identity.Pages.Account
                 user.City = Input.City;
                 user.PostalCode = Input.PostalCode;
                 user.StreetAddress = Input.StreetAddress;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
