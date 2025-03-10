@@ -43,7 +43,21 @@ namespace BookStore.Areas.Customer.Controllers
 
             shoppingCart.ApplicationUserId = userId;
 
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(e => e.ApplicationUserId == userId && 
+            e.ProductId == shoppingCart.ProductId);
+
+            if (cartFromDb != null)
+            {
+                // shoppingCart exists in database
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+            }
+            else
+            {
+                // add card record
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+
             _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
