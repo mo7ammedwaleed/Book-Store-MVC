@@ -51,13 +51,14 @@ namespace BookStore.Areas.Customer.Controllers
                 // shoppingCart exists in database
                 cartFromDb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
+                TempData["success"] = "Cart Updated successfully";
             }
             else
             {
                 // add card record
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+                TempData["success"] = "Item added to cart successfully";
             }
-
             _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
