@@ -2,8 +2,8 @@
 
 namespace BookStore.DataAccess.Repository.IRepository
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface ICategoryRepository : IRepository<Category>
     {
-        void Update(Product obj);
+        void Update(Category obj);
     }
 }
