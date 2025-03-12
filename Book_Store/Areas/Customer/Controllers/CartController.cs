@@ -22,15 +22,16 @@ namespace BookStore.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            ShoppingCartVM = new ()
+            ShoppingCartVM = new()
             {
-                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,includeProperties:"Product")
+                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product"),
+                OrderHeader = new()
             };
 
             foreach(var cart in ShoppingCartVM.ShoppingCartList)
             {
                 cart.Price = GetPriceBasedOnQuantity(cart);
-                ShoppingCartVM.OrderTotal += (cart.Price * cart.Count);
+                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
             return View(ShoppingCartVM);
