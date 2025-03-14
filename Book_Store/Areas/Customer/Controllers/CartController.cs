@@ -113,14 +113,20 @@ namespace BookStore.Areas.Customer.Controllers
             ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
                 includeProperties: "Product");
 
-            ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                cart.Price = GetPriceBasedOnQuantity(cart);
+                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+            }
+
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
-            ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
 
-            if(ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+            if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
-                // reguler user
+                // reguler Customer 
                 ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
             }
@@ -133,6 +139,14 @@ namespace BookStore.Areas.Customer.Controllers
 
             _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
             _unitOfWork.Save();
+
+            if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+            {
+                // reguler Customer account and we need to capture payment
+                //strip logic
+
+
+            }
 
             foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
@@ -147,12 +161,12 @@ namespace BookStore.Areas.Customer.Controllers
                 _unitOfWork.Save();
             }
 
-            foreach (var cart in ShoppingCartVM.ShoppingCartList)
-            {
-                cart.Price = GetPriceBasedOnQuantity(cart);
-                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
-            }
-            return View(ShoppingCartVM);
+            return RedirectToAction(nameof(OrderConfirmation), new {ShoppingCartVM.OrderHeader.Id});
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
         }
 
         private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
