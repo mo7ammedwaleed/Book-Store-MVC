@@ -159,12 +159,11 @@ namespace BookStore.Areas.Customer.Controllers
                 // reguler Customer account and we need to capture payment
                 //strip logic
                 var domain = "https://localhost:44383/";
-
-                var options = new Stripe.Checkout.SessionCreateOptions
+                var options = new SessionCreateOptions
                 {
                     SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
-                    CancelUrl = domain + "customer/cart/Index",
-                    LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
+                    CancelUrl = domain + "customer/cart/index",
+                    LineItems = new List<SessionLineItemOptions>(),
                     Mode = "payment",
                 };
 
@@ -174,7 +173,7 @@ namespace BookStore.Areas.Customer.Controllers
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            UnitAmount = (long)(item.Price * 100),
+                            UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
                             Currency = "usd",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
@@ -184,23 +183,43 @@ namespace BookStore.Areas.Customer.Controllers
                         Quantity = item.Count
                     };
                     options.LineItems.Add(sessionLineItem);
+
                 }
 
-                var service = new Stripe.Checkout.SessionService();
+                var service = new SessionService();
                 Session session = service.Create(options);
-
-                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id ,session.PaymentIntentId);
+                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
                 _unitOfWork.Save();
                 Response.Headers.Add("Location", session.Url);
                 return StatusCode(303);
-
             }
 
-            return RedirectToAction(nameof(OrderConfirmation), new {ShoppingCartVM.OrderHeader.Id});
+                return RedirectToAction(nameof(OrderConfirmation), new { ShoppingCartVM.OrderHeader.Id });
         }
 
         public IActionResult OrderConfirmation(int id)
         {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser");
+            if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
+            {
+                // this is Order by Customer
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateStripePaymentID(id,session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeader.UpdateStatus(id,SD.StatusApproved,SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
+            }
+
+            List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
+                .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
+
+            _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+            _unitOfWork.Save();
+
             return View(id);
         }
 
