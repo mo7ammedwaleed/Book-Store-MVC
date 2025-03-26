@@ -13,7 +13,7 @@ namespace BookStore.Models
         public ApplicationUser ApplicationUser{ get; set; }
 
         public DateTime OrderDate { get; set; }
-        public DateTime ShipingDate { get; set; }
+        public DateTime ShippingDate { get; set; }
         public double OrderTotal { get; set; }
 
         public string? PaymentStatus { get; set; }
