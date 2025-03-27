@@ -54,6 +54,8 @@ namespace BookStore.Areas.Customer.Controllers
             if(cartFromDb.Count <= 1)
             {
                 //remove from cart
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart
+                .GetAll(e => e.ApplicationUserId == cartFromDb.ApplicationUserId).Count() - 1);
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
             }
             else
@@ -68,7 +70,10 @@ namespace BookStore.Areas.Customer.Controllers
         public IActionResult Remove(int cartId)
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(c => c.Id == cartId);
-            
+
+            HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart
+                .GetAll(e => e.ApplicationUserId == cartFromDb.ApplicationUserId).Count() - 1);
+
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
             
             _unitOfWork.Save();
