@@ -1,4 +1,6 @@
-﻿﻿
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,30 +35,45 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Content Management
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
-                                </li>
-                            </ul>
+                                    Content Management
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li class="nav-item">
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
+                                    </li>
+                                </ul>
                             </li>
-                         }
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-                                </svg>
-                            </a>
-                        </li>
+                        }
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart) != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                                    </svg> &nbsp;
+                                    (@HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart))
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                                    </svg> &nbsp;
+                                    (0)
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
