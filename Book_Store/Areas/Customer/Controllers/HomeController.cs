@@ -28,7 +28,8 @@ namespace BookStore.Areas.Customer.Controllers
 
             if (claim != null)
             {
-                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(e => e.ApplicationUserId == claim.Value).Count());
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart
+                    .GetAll(e => e.ApplicationUserId == claim.Value).Count());
             }
 
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
