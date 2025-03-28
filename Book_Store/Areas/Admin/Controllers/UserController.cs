@@ -22,17 +22,7 @@ namespace BookStore.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<ApplicationUser> objUserList = _db.ApplicationUsers.Include(u => u.Company).ToList();
-
-            foreach (var user in objUserList)
-            {
-                if(user.Company == null)
-                {
-                    user.Company = new(){ Name = ""};
-                }
-            }
-
-            return View(objUserList);
+            return View();
         }
 
 
@@ -42,17 +32,31 @@ namespace BookStore.Areas.Admin.Controllers
         public IActionResult GetAll()
         {
             List<ApplicationUser> objUserList = _db.ApplicationUsers.Include(u => u.Company).ToList();
+
+            var userRoles = _db.UserRoles.ToList();
+            var roles = _db.Roles.ToList();
+
+            foreach (var user in objUserList)
+            {
+                var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
+                user.Role = roles.FirstOrDefault(u => u.Id == roleId).Name;
+
+                if (user.Company == null)
+                {
+                    user.Company = new() { Name = "" };
+                }
+            }
             return Json(new { data = objUserList });
         }
 
-        [HttpDelete]
-        public IActionResult Delete(int? id)
-        {
+            [HttpDelete]
+            public IActionResult Delete(int? id)
+            {
 
 
-            return Json(new { success = true, message = "User Deleted Successfully" });
+                return Json(new { success = true, message = "User Deleted Successfully" });
+            }
+
+            #endregion
         }
-
-        #endregion
-    }
 }
