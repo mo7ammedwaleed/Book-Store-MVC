@@ -49,14 +49,26 @@ namespace BookStore.Areas.Admin.Controllers
             return Json(new { data = objUserList });
         }
 
-            [HttpDelete]
-            public IActionResult Delete(int? id)
+        [HttpDelete]
+        public IActionResult LockUnLock([FromBody] string id)
+        {
+            var objFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
+            if (objFromDb == null)
             {
-
-
-                return Json(new { success = true, message = "User Deleted Successfully" });
+                return Json(new { success = false, message = "Error while Locking/Unlocking" });
+            }
+            if (objFromDb.LockoutEnd != null && objFromDb.LockoutEnd > DateTime.Now)
+            {
+                objFromDb.LockoutEnd = DateTime.Now;
+            }
+            else
+            {
+                objFromDb.LockoutEnd = DateTime.Now.AddYears(100);
             }
 
-            #endregion
+            return Json(new { success = true, message = "User Deleted Successfully" });
         }
+
+        #endregion
+    }
 }
