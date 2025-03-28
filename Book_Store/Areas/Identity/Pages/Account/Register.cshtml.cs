@@ -173,7 +173,7 @@ namespace BookStore.Areas.Identity.Pages.Account
                 user.PostalCode = Input.PostalCode;
                 user.StreetAddress = Input.StreetAddress;
 
-                if(Input.Role == SD.Role_Company)
+                if (Input.Role == SD.Role_Company)
                 {
                     user.CompanyId = Input.CompanyId;
                 }
@@ -184,7 +184,7 @@ namespace BookStore.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    if(!string.IsNullOrEmpty(Input.Role))
+                    if (!string.IsNullOrEmpty(Input.Role))
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }
@@ -211,7 +211,15 @@ namespace BookStore.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(SD.Role_Admin))
+                        {
+                            TempData["success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
+
                         return LocalRedirect(returnUrl);
                     }
                 }
