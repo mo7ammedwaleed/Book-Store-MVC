@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using BookStore.Utility;
 using BookStore.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookStore.Areas.Admin.Controllers
 {
@@ -16,9 +17,11 @@ namespace BookStore.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public UserController(ApplicationDbContext db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -45,6 +48,29 @@ namespace BookStore.Areas.Admin.Controllers
             RoleVM.ApplicationUser.Role = _db.Roles.FirstOrDefault(u => u.Id == roleID).Name;
 
             return View(RoleVM);
+        }
+        [HttpPost]
+        public IActionResult RoleManagment(RoleManagmentVM RoleVM)
+        {
+            string roleID = _db.UserRoles.FirstOrDefault(e => e.UserId == RoleVM.ApplicationUser.Id).RoleId;
+            string oldRole = _db.Roles.FirstOrDefault(u => u.Id == roleID).Name;
+
+            if (!(RoleVM.ApplicationUser.Role == oldRole))
+            {
+                ApplicationUser applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == RoleVM.ApplicationUser.Id);
+                if (RoleVM.ApplicationUser.Role == SD.Role_Company)
+                {
+                    applicationUser.CompanyId = RoleVM.ApplicationUser.CompanyId;
+                }
+                if (oldRole == SD.Role_Company)
+                {
+                    applicationUser.CompanyId = null;
+                }
+                _db.SaveChanges();
+                _userManager.RemoveFromRoleAsync(applicationUser, oldRole).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(applicationUser, RoleVM.ApplicationUser.Role).GetAwaiter().GetResult();
+            }
+            return RedirectToAction("Index");
         }
 
 
