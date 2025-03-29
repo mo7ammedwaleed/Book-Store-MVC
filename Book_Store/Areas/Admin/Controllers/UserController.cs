@@ -49,8 +49,8 @@ namespace BookStore.Areas.Admin.Controllers
             return Json(new { data = objUserList });
         }
 
-        [HttpDelete]
-        public IActionResult LockUnLock([FromBody] string id)
+        [HttpPost]
+        public IActionResult LockUnlock([FromBody] string id)
         {
             var objFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
             if (objFromDb == null)
@@ -65,8 +65,8 @@ namespace BookStore.Areas.Admin.Controllers
             {
                 objFromDb.LockoutEnd = DateTime.Now.AddYears(100);
             }
-
-            return Json(new { success = true, message = "User Deleted Successfully" });
+            _db.SaveChanges();
+            return Json(new { success = true, message = "Operation Successful" });
         }
 
         #endregion
