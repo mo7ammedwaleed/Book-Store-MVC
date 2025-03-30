@@ -25,12 +25,12 @@ namespace BookStore.DataAccess.Repository
                 productFromDb.ListPrice = obj.ListPrice;
                 productFromDb.Price100 = obj.Price100;
                 productFromDb.Price50 = obj.Price50;
-                productFromDb.ImageURL = obj.ImageURL;
+                //productFromDb.ImageURL = obj.ImageURL;
 
-                if(productFromDb.ImageURL != null)
-                {
-                    productFromDb.ImageURL = obj.ImageURL;
-                }
+                //if(productFromDb.ImageURL != null)
+                //{
+                //    productFromDb.ImageURL = obj.ImageURL;
+                //}
             }
         }
     }
