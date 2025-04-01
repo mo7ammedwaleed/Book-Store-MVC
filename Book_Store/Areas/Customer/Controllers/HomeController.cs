@@ -32,14 +32,14 @@ namespace BookStore.Areas.Customer.Controllers
                     .GetAll(e => e.ApplicationUserId == claim.Value).Count());
             }
 
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
             return View(productList);
         }
         public IActionResult Details(int productId)
         {
             ShoppingCart cart = new ()
             {
-                Product = _unitOfWork.Product.Get(e => e.Id == productId, includeProperties: "Category"),
+                Product = _unitOfWork.Product.Get(e => e.Id == productId, includeProperties: "Category,ProductImages"),
                 ProductId = productId,
                 Count = 1
             };
